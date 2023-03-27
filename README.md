@@ -3,8 +3,8 @@
 > A FastAPI practice item.
 
 
-* [ref](https://www.fastapitutorial.com/blog/fastapi-course/)
-
+* [ref1](https://www.fastapitutorial.com/blog/fastapi-course/)
+* [ref2](https://www.fastapitutorial.com/blog/fastapi-webapps/)
 
 ## Target
 

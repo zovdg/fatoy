@@ -20,8 +20,14 @@ python-dotenv
 
 pydantic[email]
 
+#for jwt tokens
+python-jose
+
 # hashing
 passlib[bcrypt]
+
+#for accessing form data
+python-multipart
 
 # for testing
 pytest
