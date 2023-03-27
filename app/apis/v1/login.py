@@ -1,5 +1,5 @@
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from fastapi import Depends, APIRouter
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import Depends, APIRouter, Response
 from sqlalchemy.orm import Session
 from datetime import timedelta
 from fastapi import status, HTTPException
@@ -8,11 +8,12 @@ from typing import Union
 from app.db.session import get_db
 from app.core.hashing import Hashing
 from app.schemas.tokens import Token
-from app.db.repository.login import get_user
+from app.db.repository.login import get_user, get_user_by_email
 from app.core.security import create_access_token
 from app.core.config import settings
 
 from app.db.models.users import User
+from app.apis.utils import OAuth2PasswordBearerWithCookie
 
 from jose import JWTError, jwt
 
@@ -21,7 +22,11 @@ router = APIRouter()
 
 
 def authenticate_user(username: str, password: str, db: Session) -> Union[bool, User]:
-    user = get_user(username=username, db=db)
+    user = (
+        get_user_by_email(email=username, db=db)
+        if username.__contains__("@")
+        else get_user(username=username, db=db)
+    )
     print(user)
     if not user:
         return False
@@ -32,7 +37,9 @@ def authenticate_user(username: str, password: str, db: Session) -> Union[bool, 
 
 @router.post("/token", response_model=Token)
 def login_for_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+    response: Response,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
 ):
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
@@ -44,10 +51,13 @@ def login_for_access_token(
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
+    response.set_cookie(
+        key="access_token", value=f"Bearer {access_token}", httponly=True
+    )
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-oauth2_schema = OAuth2PasswordBearer(tokenUrl="/login/token")
+oauth2_schema = OAuth2PasswordBearerWithCookie(tokenUrl="/login/token")
 
 
 def get_current_user_from_token(
