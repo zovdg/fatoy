@@ -11,7 +11,11 @@ def test_create_job(client, normal_user_token_headers):
         "description": "python",
         "date_posted": "2022-03-20",
     }
-    response = client.post(url="/jobs/create-job/", data=json.dumps(data), headers=normal_user_token_headers)
+    response = client.post(
+        url="/jobs/create-job/",
+        data=json.dumps(data),
+        headers=normal_user_token_headers,
+    )
     assert response.status_code == 200
     assert response.json()["company"] == "doogle"
     assert response.json()["description"] == "python"
