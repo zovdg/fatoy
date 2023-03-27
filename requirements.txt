@@ -1,0 +1,29 @@
+fastapi
+uvicorn
+
+# for template
+jinja2
+
+# for static files
+# aiofiles
+
+# for database
+sqlalchemy
+sqlalchemy-utils
+# sqlalchemy-dlock
+
+# psycopg2
+psycopg2-binary
+
+# for loading environment variables  #new
+python-dotenv
+
+pydantic[email]
+
+# hashing
+passlib[bcrypt]
+
+# for testing
+pytest
+requests
+httpx
